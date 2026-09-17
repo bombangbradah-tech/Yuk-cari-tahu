@@ -340,6 +340,7 @@ const CONFIG = {
 };
 
 const DEFAULT_DATA = {
+  ownerPasswords: [OWNER_PASSWORD],
   categories: [
     {
       id:"tes-jodoh", name:"Tes Jodoh", icon:"❤️",
@@ -604,28 +605,54 @@ async function shareResult(pct){
 
 
 function getDefaultPasswords(){
-  return ["Bradah18"];
+  return [OWNER_PASSWORD];
 }
 
+/*
+ * Password pemilik SEKARANG menjadi bagian dari database utama:
+ * data.ownerPasswords
+ *
+ * localStorage hanya dipakai sebagai cache/fallback. Password lama
+ * yang pernah dibuat pada versi sebelumnya juga akan dimigrasikan
+ * ke database Drive ketika tersedia.
+ */
 function getOwnerPasswords(){
-  const saved = localStorage.getItem("yukCariTahuOwnerPasswords");
-  try{
-    const arr=saved ? JSON.parse(saved) : getDefaultPasswords();
-    return Array.isArray(arr) && arr.length ? arr.map(String) : getDefaultPasswords();
-  }catch(e){
-    return getDefaultPasswords();
+  if(Array.isArray(data.ownerPasswords) && data.ownerPasswords.length){
+    return [...new Set(data.ownerPasswords.map(x=>String(x).trim()).filter(Boolean))];
   }
+
+  try{
+    const oldLocal = JSON.parse(localStorage.getItem("yukCariTahuOwnerPasswords") || "null");
+    if(Array.isArray(oldLocal) && oldLocal.length){
+      return [...new Set(oldLocal.map(x=>String(x).trim()).filter(Boolean))];
+    }
+  }catch(e){}
+
+  return getDefaultPasswords();
 }
 
-function saveOwnerPasswords(arr){
+function cacheOwnerPasswords(arr){
   const clean=[...new Set(arr.map(x=>String(x).trim()).filter(Boolean))];
   if(!clean.length) return false;
+  data.ownerPasswords=clean;
   localStorage.setItem("yukCariTahuOwnerPasswords",JSON.stringify(clean));
+  localStorage.setItem("yukCariTahuData",JSON.stringify(data));
   return true;
 }
 
+async function saveOwnerPasswords(arr){
+  const clean=[...new Set(arr.map(x=>String(x).trim()).filter(Boolean))];
+  if(!clean.length) return false;
+
+  data.ownerPasswords=clean;
+  cacheOwnerPasswords(clean);
+
+  /* Simpan ke file JSON utama di Google Drive. */
+  return await syncToDrive(true);
+}
+
 function verifyOwnerPassword(p){
-  return getOwnerPasswords().includes(String(p));
+  return getOwnerPasswords().includes(String(p).trim());
 }
 
 function getAccessLogs(){
@@ -802,15 +829,26 @@ function openLogin(){
   setTimeout(()=>document.getElementById("loginPassword").focus(),50);
 }
 function closeLogin(){document.getElementById("loginModal").classList.add("hidden");document.getElementById("loginPassword").value=""}
-function login(){
-  const p=document.getElementById("loginPassword").value;
+async function login(){
+  const p=document.getElementById("loginPassword").value.trim();
+  if(!p){toast("Masukkan password.");return}
+
+  /* Ambil database terbaru dulu supaya password dari perangkat lain ikut terbaca. */
+  showDriveLoading("Memeriksa password...","Mengambil data pemilik dari Google Drive.");
+  let loaded=false;
+  try{ loaded=await loadFromDrive(false); }catch(e){}
+
   if(verifyOwnerPassword(p)){
+    hideDriveLoading();
     closeLogin();
     document.getElementById("publicView").classList.add("hidden");
     document.getElementById("adminView").classList.remove("hidden");
     renderAdmin();
     window.scrollTo({top:0,behavior:"smooth"});
-  }else toast("Password salah.");
+  }else{
+    hideDriveLoading();
+    toast(loaded ? "Password salah." : "Password tidak dapat diverifikasi dari Drive. Periksa koneksi.");
+  }
 }
 function logout(){showHome()}
 function renderAdmin(){
@@ -1024,7 +1062,7 @@ function saveResults(id){
 
 
 
-async function adminAccessLogs(){
+function adminAccessLogs(){
   return `<section class="card">
     <div class="admin-top">
       <div>
@@ -1159,7 +1197,7 @@ function adminPasswords(){
   return `<section class="admin-grid">
     <section class="card">
       <h2>🔐 Tambah Password Cadangan</h2>
-      <p style="color:var(--muted);line-height:1.6">Password tambahan dapat digunakan untuk masuk ke menu Pemilik. Password utama yang sudah ada tetap aktif. <b>Password disimpan di browser ini, bukan di Google Drive</b>, agar password tidak tersimpan sebagai data publik.</p>
+      <p style="color:var(--muted);line-height:1.6">Password tambahan dapat digunakan untuk masuk ke menu Pemilik. Password tersimpan bersama <b>data soal dan tampilan</b> di database Google Drive, sehingga dapat digunakan dari perangkat lain.</p>
       <div class="form-group"><label>Password baru</label><input id="newOwnerPassword" type="password" placeholder="Masukkan password cadangan"></div>
       <div class="form-group"><label>Konfirmasi password</label><input id="newOwnerPassword2" type="password" placeholder="Ulangi password"></div>
       <button class="primary-btn" onclick="addOwnerPassword()">➕ Tambah Password</button>
@@ -1177,27 +1215,35 @@ function adminPasswords(){
   </section>`;
 }
 
-function addOwnerPassword(){
+async function addOwnerPassword(){
   const a=document.getElementById("newOwnerPassword").value.trim();
   const b=document.getElementById("newOwnerPassword2").value.trim();
   if(a.length<4){toast("Password minimal 4 karakter.");return}
   if(a!==b){toast("Konfirmasi password tidak sama.");return}
+
   const arr=getOwnerPasswords();
   if(arr.includes(a)){toast("Password tersebut sudah terdaftar.");return}
+
   arr.push(a);
-  saveOwnerPasswords(arr);
-  renderAdmin();
-  toast("🔐 Password cadangan berhasil ditambahkan.");
+  const ok=await saveOwnerPasswords(arr);
+  if(ok){
+    renderAdmin();
+    toast("🔐 Password berhasil disimpan ke Google Drive.");
+  }
 }
 
-function deleteOwnerPassword(i){
+async function deleteOwnerPassword(i){
   const arr=getOwnerPasswords();
   if(i<=0){toast("Password utama tidak dapat dihapus dari sini.");return}
-  if(!confirm("Hapus password cadangan ini?"))return;
+  if(arr.length<=1){toast("Minimal harus ada satu password.");return}
+  if(!confirm("Hapus password cadangan ini dari database Drive?"))return;
+
   arr.splice(i,1);
-  saveOwnerPasswords(arr);
-  renderAdmin();
-  toast("Password cadangan dihapus.");
+  const ok=await saveOwnerPasswords(arr);
+  if(ok){
+    renderAdmin();
+    toast("Password cadangan dihapus dari Google Drive.");
+  }
 }
 
 
@@ -1557,9 +1603,29 @@ async function loadFromDrive(show=false){
       }
 
       data.siteSettings = normalizeSiteSettings(data.siteSettings);
-      localStorage.setItem("yukCariTahuData", JSON.stringify(data));
 
-      if(show && driveHasQuestions) toast("✅ Data tes berhasil dimuat dari Google Drive.");
+      // Migrasi password versi lama: jika Drive belum punya ownerPasswords,
+      // pertahankan password yang ada di cache browser dan jangan menghapusnya.
+      if(!Array.isArray(data.ownerPasswords) || !data.ownerPasswords.length){
+        try{
+          const oldLocalPasswords=JSON.parse(localStorage.getItem("yukCariTahuOwnerPasswords") || "null");
+          if(Array.isArray(oldLocalPasswords) && oldLocalPasswords.length){
+            data.ownerPasswords=[...new Set(oldLocalPasswords.map(x=>String(x).trim()).filter(Boolean))];
+          }else{
+            data.ownerPasswords=getDefaultPasswords();
+          }
+        }catch(e){
+          data.ownerPasswords=getDefaultPasswords();
+        }
+
+        // Simpan migrasi password ke Drive tanpa menyentuh categories.
+        try{ await syncToDrive(false); }catch(e){}
+      }
+
+      localStorage.setItem("yukCariTahuData", JSON.stringify(data));
+      localStorage.setItem("yukCariTahuOwnerPasswords", JSON.stringify(getOwnerPasswords()));
+
+      if(show && driveHasQuestions) toast("✅ Data tes, tampilan, dan password berhasil dimuat dari Google Drive.");
       return true;
     }
 
