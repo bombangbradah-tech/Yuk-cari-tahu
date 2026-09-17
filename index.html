@@ -73,7 +73,7 @@ header{
 .share-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:20px}
 .admin{max-width:1100px;margin:auto}
 .admin-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
 .stat strong{display:block;font-size:30px;margin-top:3px}
 .stat small{color:var(--muted)}
 .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
@@ -108,7 +108,7 @@ textarea{min-height:160px;resize:vertical}
 @media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.admin-grid{grid-template-columns:1fr}}
 @media(max-width:560px){
   .container{padding:18px 13px 40px}.hero{padding:27px 20px;border-radius:22px}
-  .grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}
+  .grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}
   .stat{padding:14px 10px}.stat strong{font-size:24px}.question{font-size:22px}
   .form-row{grid-template-columns:1fr}.admin-item{align-items:flex-start;flex-direction:column}
   .item-actions{width:100%}.item-actions button{flex:1}
@@ -216,6 +216,48 @@ body.compact-mode .card{border-radius:14px;padding:16px}
 body.no-animations *{animation:none!important;transition:none!important}
 @media(max-width:800px){.customize-grid{grid-template-columns:1fr}}
 
+
+/* ================= ACCESS LOG + PASSWORD MANAGEMENT ================= */
+.log-table-wrap{overflow:auto;border:1px solid var(--border);border-radius:16px}
+.log-table{width:100%;border-collapse:collapse;min-width:760px;font-size:13px}
+.log-table th,.log-table td{padding:11px 12px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+.log-table th{background:var(--bg);font-weight:850;position:sticky;top:0}
+.log-table tr:last-child td{border-bottom:0}
+.log-result{font-weight:800}
+.password-list{margin-top:12px}
+.password-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.password-item:last-child{border-bottom:0}
+.password-badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#eef0f5;font-size:12px;font-weight:800}
+.log-empty{padding:30px;text-align:center;color:var(--muted)}
+.name-modal-box{width:min(480px,100%)}
+.name-greeting{font-size:14px;color:var(--muted);line-height:1.6}
+@media(max-width:560px){
+  .password-item{align-items:flex-start;flex-direction:column}
+  .password-item .item-actions{width:100%}
+}
+
+
+/* ================= SEPARATE PARTICIPANT HISTORY ================= */
+.history-filters{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:14px}
+.history-card{cursor:pointer;transition:.15s}
+.history-card:hover{transform:translateY(-2px);box-shadow:0 18px 40px rgba(31,41,55,.12)}
+.history-card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.history-name{font-size:18px;font-weight:900}
+.history-score{font-size:24px;font-weight:950;color:var(--primary)}
+.history-meta{font-size:13px;color:var(--muted);margin-top:5px}
+.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+.detail-box{padding:13px;border:1px solid var(--border);border-radius:14px;background:var(--bg)}
+.detail-box small{display:block;color:var(--muted);font-size:12px;margin-bottom:4px}
+.detail-box strong{display:block;font-size:15px;line-height:1.4}
+.answer-table-wrap{overflow:auto;border:1px solid var(--border);border-radius:14px}
+.answer-table{width:100%;border-collapse:collapse;min-width:700px;font-size:13px}
+.answer-table th,.answer-table td{padding:11px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+.answer-table th{background:var(--bg);font-weight:850}
+.answer-table tr:last-child td{border-bottom:0}
+.history-loading{text-align:center;padding:30px;color:var(--muted)}
+.history-pagination{display:flex;justify-content:center;gap:8px;align-items:center;margin-top:14px}
+@media(max-width:700px){.history-filters{grid-template-columns:1fr}.detail-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -246,6 +288,23 @@ body.no-animations *{animation:none!important;transition:none!important}
 
 <div id="siteFooter" class="site-footer"></div>
 
+
+<div id="participantModal" class="modal hidden">
+  <div class="modal-box name-modal-box">
+    <h3>👋 Sebelum Mulai</h3>
+    <p class="name-greeting">Masukkan nama kamu terlebih dahulu. Nama ini akan dicatat oleh pemilik website bersama tes dan hasil yang kamu kerjakan.</p>
+    <div class="form-group">
+      <label>Nama</label>
+      <input id="participantName" type="text" maxlength="100" placeholder="Masukkan nama kamu"
+        onkeydown="if(event.key==='Enter')confirmParticipantName()">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="secondary-btn" onclick="closeParticipantName()">Batal</button>
+      <button class="primary-btn" onclick="confirmParticipantName()">Lanjut →</button>
+    </div>
+  </div>
+</div>
+
 <div id="loginModal" class="modal hidden">
   <div class="modal-box">
     <h3>🔐 Area Pemilik</h3>
@@ -270,13 +329,13 @@ body.no-animations *{animation:none!important;transition:none!important}
    Database utama (termasuk siteSettings) disimpan melalui Google Apps Script.
    ========================================================== */
 
-const OWNER_PASSWORD = "Bradah18";
+const OWNER_PASSWORD = "Bradah18"; // Password utama awal; password tambahan dikelola dari menu Pemilik.
 
 /* Jangan masukkan password produksi di HTML jika website
    dibuka untuk umum. Verifikasi server-side disarankan. */
 
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/AKfycbymp6EjqIWFUWeoFHqr3rGFCsREgguNU92x6D_j2kScQADwgsm89-pAocDr-BnzqxEk/exec",
+  API_URL: "https://script.google.com/macros/s/AKfycbx3LuMIfwgaRVIv8YzXFC0NmhDlw0jB_5UT6r9QrcTTT_NxQ-1SkNmlGXHlHkCCJrKf/exec",
   APP_NAME: "Yuk Cari Tahu"
 };
 
@@ -353,7 +412,13 @@ data.siteSettings = normalizeSiteSettings(data.siteSettings);
 let currentTest = null;
 let currentQuestion = 0;
 let answers = [];
+let participantName = "";
+let accessStartedAt = null;
 let adminTab = "tests";
+let historyPage = 1;
+let historySearch = "";
+let historyDate = "";
+let historyCache = [];
 
 
 function normalizeSiteSettings(saved){
@@ -412,8 +477,13 @@ function saveSiteSettings(show=true){
 function loadData(){
   try{
     const saved = localStorage.getItem("yukCariTahuData");
-    return saved ? JSON.parse(saved) : structuredClone(DEFAULT_DATA);
-  }catch(e){ return structuredClone(DEFAULT_DATA); }
+    const d=saved ? JSON.parse(saved) : structuredClone(DEFAULT_DATA);
+    return d;
+  }catch(e){
+    const d=structuredClone(DEFAULT_DATA);
+    d.accessLogs=[];
+    return d;
+  }
 }
 function saveData(show=false){
   // localStorage hanya cache/offline fallback.
@@ -455,19 +525,16 @@ function renderHome(){
           <h3>${esc(t.name)}</h3>
           <p>${esc(t.description)}</p>
           <div class="test-meta">${t.questions.length} pertanyaan</div>
-          <button class="primary-btn" onclick="startTest('${t.id}')">${esc(s.startButton)}</button>
+          <button class="primary-btn" onclick="openParticipantName('${t.id}')">${esc(s.startButton)}</button>
         </article>`).join("") : `<div class="card empty" style="grid-column:1/-1">${esc(s.emptyText)}</div>`}
     </div>`;
   applySiteSettings();
 }
 
 function startTest(id){
-  currentTest=data.categories.find(x=>x.id===id);
-  if(!currentTest || !currentTest.questions.length){toast("Tes belum memiliki soal.");return}
-  currentQuestion=0; answers=[];
-  renderQuiz();
-  window.scrollTo({top:0,behavior:"smooth"});
+  openParticipantName(id);
 }
+
 function renderQuiz(){
   const t=currentTest, q=t.questions[currentQuestion], total=t.questions.length;
   const selected=answers[currentQuestion];
@@ -508,6 +575,11 @@ function showResult(){
   let result=(t.results||[]).find(r=>total>=Number(r.min)&&total<=Number(r.max));
   if(!result && t.results?.length) result=t.results[t.results.length-1];
   result=result||{icon:"✨",title:"Hasil Tes Kamu",description:"Terima kasih sudah mengikuti tes ini."};
+
+  // Catat setelah peserta benar-benar menyelesaikan tes.
+  // Penyimpanan dilakukan ke file riwayat terpisah di Google Drive.
+  saveAccessLogSeparate(t,pct,result);
+
   document.getElementById("publicView").innerHTML=`
     <div class="quiz-wrap">
       <section class="card result" style="border-radius:${Number(getSiteSettings().radius)||21}px">
@@ -518,7 +590,7 @@ function showResult(){
         <p>${esc(result.description)}</p>
         <div class="share-row">
           <button class="primary-btn" onclick="shareResult(${pct})">📤 Bagikan Hasil</button>
-          <button class="secondary-btn" onclick="startTest('${t.id}')">🔄 Coba Lagi</button>
+          <button class="secondary-btn" onclick="openParticipantName('${t.id}')">🔄 Coba Lagi</button>
           <button class="secondary-btn" onclick="showHome()">🏠 Tes Lain</button>
         </div>
       </section>
@@ -530,6 +602,200 @@ async function shareResult(pct){
   try{await navigator.clipboard.writeText(text);toast("Hasil disalin. Tinggal paste ke WhatsApp!")}catch(e){toast(text)}
 }
 
+
+function getDefaultPasswords(){
+  return ["Bradah18"];
+}
+
+function getOwnerPasswords(){
+  const saved = localStorage.getItem("yukCariTahuOwnerPasswords");
+  try{
+    const arr=saved ? JSON.parse(saved) : getDefaultPasswords();
+    return Array.isArray(arr) && arr.length ? arr.map(String) : getDefaultPasswords();
+  }catch(e){
+    return getDefaultPasswords();
+  }
+}
+
+function saveOwnerPasswords(arr){
+  const clean=[...new Set(arr.map(x=>String(x).trim()).filter(Boolean))];
+  if(!clean.length) return false;
+  localStorage.setItem("yukCariTahuOwnerPasswords",JSON.stringify(clean));
+  return true;
+}
+
+function verifyOwnerPassword(p){
+  return getOwnerPasswords().includes(String(p));
+}
+
+function getAccessLogs(){
+  // Riwayat sekarang TIDAK lagi menjadi bagian database utama.
+  // Hanya fallback sementara di memory untuk sesi ini.
+  if(!Array.isArray(historyCache)) historyCache=[];
+  return historyCache;
+}
+
+function buildDetailedAccessLog(test, pct, result){
+  const now=new Date();
+  return {
+    id:uid("log"),
+    name:String(participantName||"Tanpa Nama").trim(),
+    testId:test?.id||"",
+    testName:test?.name||"",
+    score:Number(pct)||0,
+    result:{
+      icon:result?.icon||"✨",
+      title:result?.title||"Hasil Tes Kamu",
+      description:result?.description||""
+    },
+    accessedAt:now.toISOString(),
+    accessedDate:now.toLocaleDateString("id-ID"),
+    accessedTime:now.toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit",second:"2-digit"}),
+    answers:answers.map((answerIndex,i)=>({
+      number:i+1,
+      question:test.questions[i]?.q||"",
+      answerIndex:Number(answerIndex),
+      answer:test.questions[i]?.options?.[answerIndex]||"",
+      score:Number(test.questions[i]?.scores?.[answerIndex]??0)
+    }))
+  };
+}
+
+async function saveAccessLogSeparate(test, pct, result){
+  const log=buildDetailedAccessLog(test,pct,result);
+
+  // Simpan hanya ke endpoint riwayat. Tidak menyentuh database utama.
+  if(!CONFIG.API_URL){
+    toast("URL backend belum dipasang.");
+    return false;
+  }
+
+  try{
+    const response=await fetch(CONFIG.API_URL,{
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({
+        action:"saveAccessLog",
+        log:log
+      }),
+      redirect:"follow"
+    });
+
+    const text=await response.text();
+    let resultServer=null;
+    try{resultServer=JSON.parse(text)}catch(e){}
+
+    if(resultServer && resultServer.success===false){
+      throw new Error(resultServer.message||"Server menolak penyimpanan riwayat.");
+    }
+
+    return true;
+  }catch(e){
+    console.error("Gagal menyimpan riwayat peserta:",e);
+    // Jangan menghambat peserta melihat hasil.
+    return false;
+  }
+}
+
+async function loadAccessLogsSeparate(search="", date=""){
+  if(!CONFIG.API_URL)return [];
+
+  try{
+    const qs=new URLSearchParams({
+      action:"listAccessLogs",
+      search:String(search||""),
+      date:String(date||""),
+      ts:String(Date.now())
+    });
+
+    const response=await fetch(CONFIG.API_URL+"?"+qs.toString(),{
+      method:"GET",
+      cache:"no-store"
+    });
+    if(!response.ok)throw new Error("HTTP "+response.status);
+
+    const result=await response.json();
+    if(result && result.success && Array.isArray(result.logs)){
+      historyCache=result.logs;
+      return result.logs;
+    }
+    throw new Error(result?.message||"Data riwayat tidak valid.");
+  }catch(e){
+    console.error("Gagal memuat riwayat:",e);
+    toast("⚠️ Riwayat terpisah belum dapat dimuat.");
+    return [];
+  }
+}
+
+async function loadAccessLogDetail(id){
+  if(!CONFIG.API_URL)return null;
+  try{
+    const qs=new URLSearchParams({
+      action:"getAccessLog",
+      id:String(id),
+      ts:String(Date.now())
+    });
+    const response=await fetch(CONFIG.API_URL+"?"+qs.toString(),{
+      method:"GET",
+      cache:"no-store"
+    });
+    if(!response.ok)throw new Error("HTTP "+response.status);
+    const result=await response.json();
+    if(result && result.success && result.log)return result.log;
+    throw new Error(result?.message||"Detail riwayat tidak ditemukan.");
+  }catch(e){
+    console.error("Gagal memuat detail riwayat:",e);
+    toast("⚠️ Detail riwayat tidak dapat dimuat.");
+    return null;
+  }
+}
+
+
+function formatAccessDate(iso){
+  if(!iso)return "-";
+  const d=new Date(iso);
+  if(Number.isNaN(d.getTime()))return "-";
+  return d.toLocaleString("id-ID",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"});
+}
+
+function openParticipantName(id){
+  const t=data.categories.find(x=>x.id===id);
+  if(!t || !t.questions.length){toast("Tes belum memiliki soal.");return}
+  currentTest=t;
+  document.getElementById("participantModal").classList.remove("hidden");
+  const input=document.getElementById("participantName");
+  input.value="";
+  setTimeout(()=>input.focus(),60);
+}
+
+function closeParticipantName(){
+  document.getElementById("participantModal").classList.add("hidden");
+  document.getElementById("participantName").value="";
+}
+
+function confirmParticipantName(){
+  const input=document.getElementById("participantName");
+  const name=input.value.trim();
+  if(!name){toast("Nama wajib diisi terlebih dahulu.");input.focus();return}
+  participantName=name;
+  accessStartedAt=new Date().toISOString();
+  currentQuestion=0;
+  answers=[];
+  closeParticipantName();
+  renderQuiz();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function clearAccessLogs(){
+  if(!getAccessLogs().length){toast("Belum ada riwayat akses.");return}
+  if(!confirm("Hapus semua riwayat akses? Data ini juga akan disimpan ke Google Drive."))return;
+  data.accessLogs=[];
+  saveData(true);
+  renderAdmin();
+  toast("Riwayat akses dihapus.");
+}
+
+
 /* ================= ADMIN ================= */
 function openLogin(){
   document.getElementById("loginModal").classList.remove("hidden");
@@ -538,7 +804,7 @@ function openLogin(){
 function closeLogin(){document.getElementById("loginModal").classList.add("hidden");document.getElementById("loginPassword").value=""}
 function login(){
   const p=document.getElementById("loginPassword").value;
-  if(p===OWNER_PASSWORD){
+  if(verifyOwnerPassword(p)){
     closeLogin();
     document.getElementById("publicView").classList.add("hidden");
     document.getElementById("adminView").classList.remove("hidden");
@@ -557,7 +823,8 @@ function renderAdmin(){
     <div class="stats">
       <div class="card stat"><small>Total Tes</small><strong>${data.categories.length}</strong></div>
       <div class="card stat"><small>Total Soal</small><strong>${totalQuestions}</strong></div>
-      <div class="card stat"><small>Status</small><strong>${data.categories.filter(x=>x.active!==false).length}</strong></div>
+      <div class="card stat"><small>Tes Aktif</small><strong>${data.categories.filter(x=>x.active!==false).length}</strong></div>
+      <div class="card stat"><small>Riwayat Dimuat</small><strong>${historyCache.length}</strong></div>
     </div>
     <div class="admin-tabs">
       <button class="admin-tab ${adminTab==='tests'?'active':''}" onclick="adminTab='tests';renderAdmin()">📚 Tes</button>
@@ -565,9 +832,12 @@ function renderAdmin(){
       <button class="admin-tab ${adminTab==='results'?'active':''}" onclick="adminTab='results';renderAdmin()">🏆 Hasil</button>
       <button class="admin-tab ${adminTab==='backup'?'active':''}" onclick="adminTab='backup';renderAdmin()">☁️ Data</button>
       <button class="admin-tab ${adminTab==='customize'?'active':''}" onclick="adminTab='customize';renderAdmin()">🎨 Tampilan</button>
+      <button class="admin-tab ${adminTab==='access'?'active':''}" onclick="adminTab='access';renderAdmin()">👥 Pengunjung</button>
+      <button class="admin-tab ${adminTab==='passwords'?'active':''}" onclick="adminTab='passwords';renderAdmin()">🔐 Password</button>
     </div>
-    ${adminTab==='tests'?adminTests():adminTab==='questions'?adminQuestions():adminTab==='results'?adminResults():adminTab==='backup'?adminBackup():adminCustomize()}
+    ${adminTab==='tests'?adminTests():adminTab==='questions'?adminQuestions():adminTab==='results'?adminResults():adminTab==='backup'?adminBackup():adminTab==='customize'?adminCustomize():adminTab==='access'?adminAccessLogs():adminPasswords()}
   `;
+  if(adminTab==="access") setTimeout(()=>refreshHistory(),0);
 }
 function adminTests(){
  return `<div class="admin-grid">
@@ -753,6 +1023,184 @@ function saveResults(id){
 }
 
 
+
+async function adminAccessLogs(){
+  return `<section class="card">
+    <div class="admin-top">
+      <div>
+        <h2 style="margin:0">👥 Riwayat Pengunjung</h2>
+        <div style="color:var(--muted);font-size:13px">Data ini diambil dari penyimpanan riwayat terpisah di Google Drive.</div>
+      </div>
+      <button class="secondary-btn" onclick="refreshHistory()">🔄 Refresh</button>
+    </div>
+
+    <div class="history-filters">
+      <input id="historySearch" value="${esc(historySearch)}" placeholder="🔎 Cari nama / tes">
+      <input id="historyDate" type="date" value="${esc(historyDate)}">
+      <button class="primary-btn" onclick="applyHistoryFilter()">Cari</button>
+    </div>
+
+    <div id="historyContent" class="history-loading">Memuat riwayat dari Google Drive...</div>
+  </section>`;
+}
+
+async function refreshHistory(){
+  historyPage=1;
+  const box=document.getElementById("historyContent");
+  if(box)box.innerHTML='<div class="history-loading">⏳ Memuat riwayat...</div>';
+  await loadAccessLogsSeparate(historySearch,historyDate);
+  renderHistoryContent();
+}
+
+async function applyHistoryFilter(){
+  historySearch=(document.getElementById("historySearch")?.value||"").trim();
+  historyDate=document.getElementById("historyDate")?.value||"";
+  historyPage=1;
+  const box=document.getElementById("historyContent");
+  if(box)box.innerHTML='<div class="history-loading">⏳ Mencari...</div>';
+  await loadAccessLogsSeparate(historySearch,historyDate);
+  renderHistoryContent();
+}
+
+function renderHistoryContent(){
+  const box=document.getElementById("historyContent");
+  if(!box)return;
+
+  const logs=[...historyCache].sort((a,b)=>new Date(b.accessedAt)-new Date(a.accessedAt));
+  const perPage=10;
+  const totalPages=Math.max(1,Math.ceil(logs.length/perPage));
+  historyPage=Math.min(Math.max(1,historyPage),totalPages);
+  const pageLogs=logs.slice((historyPage-1)*perPage,historyPage*perPage);
+
+  if(!logs.length){
+    box.innerHTML='<div class="log-empty">Tidak ada riwayat yang cocok.</div>';
+    return;
+  }
+
+  box.innerHTML=`
+    <div style="color:var(--muted);font-size:13px;margin-bottom:10px">
+      ${logs.length} riwayat ditemukan • Klik kartu/nama untuk melihat detail lengkap.
+    </div>
+    <div style="display:grid;gap:10px">
+      ${pageLogs.map(l=>`
+        <article class="card history-card" style="box-shadow:none" onclick="openHistoryDetail('${esc(l.id)}')">
+          <div class="history-card-top">
+            <div>
+              <div class="history-name">${esc(l.name||"Tanpa Nama")}</div>
+              <div style="font-weight:800;margin-top:4px">${esc(l.testName||"-")}</div>
+              <div class="history-meta">${esc(formatAccessDate(l.accessedAt))}</div>
+            </div>
+            <div class="history-score">${Number(l.score)||0}%</div>
+          </div>
+          <div class="history-meta">Hasil: <b>${esc(l.resultTitle||l.result?.title||"-")}</b></div>
+        </article>`).join("")}
+    </div>
+    <div class="history-pagination">
+      <button class="secondary-btn" ${historyPage<=1?'disabled':''} onclick="historyPage--;renderHistoryContent()">←</button>
+      <span style="font-size:13px;color:var(--muted)">Halaman ${historyPage} / ${totalPages}</span>
+      <button class="secondary-btn" ${historyPage>=totalPages?'disabled':''} onclick="historyPage++;renderHistoryContent()">→</button>
+    </div>`;
+}
+
+async function openHistoryDetail(id){
+  const detail=await loadAccessLogDetail(id);
+  if(!detail)return;
+
+  const r=detail.result||{};
+  const answersDetail=Array.isArray(detail.answers)?detail.answers:[];
+
+  document.getElementById("historyDetailModal")?.remove();
+
+  const modal=document.createElement("div");
+  modal.id="historyDetailModal";
+  modal.className="modal";
+  modal.innerHTML=`
+    <div class="modal-box" style="width:min(900px,100%);max-height:90vh;overflow:auto">
+      <div class="admin-top">
+        <div><h2 style="margin:0">👤 Detail Peserta</h2></div>
+        <button class="secondary-btn" onclick="document.getElementById('historyDetailModal').remove()">✕ Tutup</button>
+      </div>
+
+      <div class="detail-grid">
+        <div class="detail-box"><small>Nama</small><strong>${esc(detail.name||"-")}</strong></div>
+        <div class="detail-box"><small>Nama Tes</small><strong>${esc(detail.testName||"-")}</strong></div>
+        <div class="detail-box"><small>Hasil</small><strong>${esc(r.icon||"✨")} ${esc(r.title||detail.resultTitle||"-")}</strong></div>
+        <div class="detail-box"><small>Skor</small><strong>${Number(detail.score)||0}%</strong></div>
+        <div class="detail-box"><small>Tanggal</small><strong>${esc(detail.accessedDate||formatAccessDate(detail.accessedAt))}</strong></div>
+        <div class="detail-box"><small>Waktu Akses</small><strong>${esc(detail.accessedTime||"-")}</strong></div>
+      </div>
+
+      <section class="card" style="box-shadow:none;background:var(--bg);margin-bottom:12px">
+        <h3 style="margin-top:0">${esc(r.icon||"✨")} ${esc(r.title||"Hasil Tes")}</h3>
+        <p style="white-space:pre-wrap;line-height:1.7;margin-bottom:0">${esc(r.description||"-")}</p>
+      </section>
+
+      <h3>📝 Rincian Jawaban</h3>
+      ${answersDetail.length?`
+        <div class="answer-table-wrap">
+          <table class="answer-table">
+            <thead><tr><th>No.</th><th>Pertanyaan</th><th>Jawaban Peserta</th><th>Skor</th></tr></thead>
+            <tbody>${answersDetail.map(a=>`
+              <tr>
+                <td>${Number(a.number)||"-"}</td>
+                <td>${esc(a.question||"-")}</td>
+                <td><b>${esc(a.answer||"-")}</b></td>
+                <td>${Number(a.score)||0}</td>
+              </tr>`).join("")}</tbody>
+          </table>
+        </div>`:'<div class="log-empty">Rincian jawaban tidak tersedia.</div>'}
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+
+function adminPasswords(){
+  const passwords=getOwnerPasswords();
+  return `<section class="admin-grid">
+    <section class="card">
+      <h2>🔐 Tambah Password Cadangan</h2>
+      <p style="color:var(--muted);line-height:1.6">Password tambahan dapat digunakan untuk masuk ke menu Pemilik. Password utama yang sudah ada tetap aktif. <b>Password disimpan di browser ini, bukan di Google Drive</b>, agar password tidak tersimpan sebagai data publik.</p>
+      <div class="form-group"><label>Password baru</label><input id="newOwnerPassword" type="password" placeholder="Masukkan password cadangan"></div>
+      <div class="form-group"><label>Konfirmasi password</label><input id="newOwnerPassword2" type="password" placeholder="Ulangi password"></div>
+      <button class="primary-btn" onclick="addOwnerPassword()">➕ Tambah Password</button>
+    </section>
+    <section class="card">
+      <h2>📋 Daftar Password</h2>
+      <div class="password-list">
+        ${passwords.map((p,i)=>`
+          <div class="password-item">
+            <div><span class="password-badge">Password ${i+1}</span><div class="item-sub">${i===0?'Password utama':'Password cadangan'}</div></div>
+            <div class="item-actions">${i===0?'<span class="password-badge">Utama</span>':`<button class="danger-btn" onclick="deleteOwnerPassword(${i})">Hapus</button>`}</div>
+          </div>`).join("")}
+      </div>
+    </section>
+  </section>`;
+}
+
+function addOwnerPassword(){
+  const a=document.getElementById("newOwnerPassword").value.trim();
+  const b=document.getElementById("newOwnerPassword2").value.trim();
+  if(a.length<4){toast("Password minimal 4 karakter.");return}
+  if(a!==b){toast("Konfirmasi password tidak sama.");return}
+  const arr=getOwnerPasswords();
+  if(arr.includes(a)){toast("Password tersebut sudah terdaftar.");return}
+  arr.push(a);
+  saveOwnerPasswords(arr);
+  renderAdmin();
+  toast("🔐 Password cadangan berhasil ditambahkan.");
+}
+
+function deleteOwnerPassword(i){
+  const arr=getOwnerPasswords();
+  if(i<=0){toast("Password utama tidak dapat dihapus dari sini.");return}
+  if(!confirm("Hapus password cadangan ini?"))return;
+  arr.splice(i,1);
+  saveOwnerPasswords(arr);
+  renderAdmin();
+  toast("Password cadangan dihapus.");
+}
+
+
 function adminCustomize(){
   const s=getSiteSettings();
   const color=(id,label,value)=>`<div class="form-group"><label>${label}</label><div class="color-row"><input id="${id}" type="text" value="${esc(value)}" maxlength="7"><input id="${id}Color" type="color" value="${esc(value)}" oninput="document.getElementById('${id}').value=this.value;previewSiteSettings()"></div></div>`;
@@ -917,14 +1365,31 @@ function adminBackup(){
      mengedit, menghapus, atau mengimport tes/soal, data akan dikirim ke Drive.
      Saat website dibuka, data terbaru dari Drive akan dimuat terlebih dahulu.
    </p>
-   <div class="notice">API saat ini: ${CONFIG.API_URL ? "🟢 Terpasang" : "🔴 Belum dipasang"}</div>
+   <div class="notice">API saat ini: ${CONFIG.API_URL ? "🟢 Terpasang" : "🔴 Belum dipasang"}<br><small>Database utama = soal + tampilan. Riwayat peserta = penyimpanan terpisah.</small></div>
    <div style="display:flex;gap:8px;flex-wrap:wrap">
      <button class="primary-btn" onclick="syncToDrive(true)">☁️ Simpan ke Drive</button>
+      <button class="secondary-btn" onclick="backupQuestionsNow()">🛡️ Backup Soal Sekarang</button>
      <button id="refreshDriveBtn" class="secondary-btn" onclick="refreshFromDrive()">🔄 Muat dari Drive</button>
    </div>
   </section>
  </section>`;
 }
+function backupQuestionsNow(){
+  const payload={
+    version:"Yuk Cari Tahu V5",
+    exportedAt:new Date().toISOString(),
+    categories:data.categories,
+    siteSettings:data.siteSettings
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="yuk-cari-tahu-BACKUP-SOAL-"+new Date().toISOString().slice(0,10)+".json";
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  toast("🛡️ Backup soal berhasil dibuat.");
+}
+
 function exportData(){
  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="yuk-cari-tahu-backup.json";a.click();URL.revokeObjectURL(a.href);
@@ -1065,15 +1530,36 @@ async function loadFromDrive(show=false){
     if(result && result.success && result.data &&
        Array.isArray(result.data.categories)){
 
-      // Google Drive adalah sumber data utama.
-      data = result.data;
-      data.siteSettings = normalizeSiteSettings(data.siteSettings);
-      applySiteSettings();
+      const driveData = result.data;
+      const localRaw = localStorage.getItem("yukCariTahuData");
+      let localData = null;
+      try{ localData = localRaw ? JSON.parse(localRaw) : null; }catch(e){ localData=null; }
 
-      // Simpan salinan lokal hanya sebagai cache/offline fallback.
+      const driveHasQuestions = driveData.categories.some(t =>
+        t && t.name && Array.isArray(t.questions) && t.questions.length > 0
+      );
+      const localHasQuestions = localData &&
+        Array.isArray(localData.categories) &&
+        localData.categories.some(t =>
+          t && Array.isArray(t.questions) && t.questions.length > 0
+        );
+
+      // SAFETY: database Drive yang kosong/tidak lengkap tidak boleh
+      // menghapus soal yang masih tersimpan di browser.
+      if(driveHasQuestions || !localHasQuestions){
+        data = driveData;
+      }else{
+        data = localData;
+        data.siteSettings = normalizeSiteSettings(
+          driveData.siteSettings || localData.siteSettings
+        );
+        if(show) toast("⚠️ Drive kosong/tidak lengkap. Data soal lokal dipertahankan.");
+      }
+
+      data.siteSettings = normalizeSiteSettings(data.siteSettings);
       localStorage.setItem("yukCariTahuData", JSON.stringify(data));
 
-      if(show) toast("✅ Data terbaru berhasil dimuat dari Google Drive.");
+      if(show && driveHasQuestions) toast("✅ Data tes berhasil dimuat dari Google Drive.");
       return true;
     }
 
