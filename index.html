@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Yuk Cari Tahu</title>
+<style>
+:root{
+  --bg:#f5f7fb; --card:#fff; --text:#18202a; --muted:#6b7280;
+  --primary:#6c5ce7; --primary2:#8e7dff; --danger:#ef4444;
+  --success:#16a34a; --border:#e7e9ef; --shadow:0 12px 35px rgba(31,41,55,.09);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.app{min-height:100vh}
+header{
+  position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);
+  backdrop-filter:blur(14px);border-bottom:1px solid var(--border)
+}
+.nav{max-width:1100px;margin:auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{font-size:21px;font-weight:900;letter-spacing:-.5px}
+.brand span{color:var(--primary)}
+.nav-actions{display:flex;gap:8px}
+.icon-btn,.secondary-btn,.primary-btn,.danger-btn{
+  border:0;border-radius:12px;padding:10px 14px;font-weight:750
+}
+.icon-btn,.secondary-btn{background:#f0f1f6;color:#303744}
+.primary-btn{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 7px 18px rgba(108,92,231,.22)}
+.danger-btn{background:#fee2e2;color:#b91c1c}
+.container{max-width:1100px;margin:auto;padding:24px 18px 50px}
+.hero{
+  border-radius:28px;padding:34px 25px;margin-bottom:25px;
+  background:linear-gradient(135deg,#6c5ce7,#9b8cff);
+  color:#fff;box-shadow:var(--shadow);position:relative;overflow:hidden
+}
+.hero:after{content:"";position:absolute;width:230px;height:230px;border-radius:50%;right:-60px;top:-90px;background:rgba(255,255,255,.13)}
+.hero h1{font-size:clamp(32px,6vw,52px);margin:0 0 8px;position:relative;z-index:1}
+.hero p{margin:0;max-width:650px;font-size:16px;line-height:1.6;opacity:.94;position:relative;z-index:1}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin:20px 0 13px}
+.section-title h2{margin:0;font-size:21px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:21px;padding:20px;box-shadow:var(--shadow)}
+.test-card{display:flex;flex-direction:column;min-height:210px}
+.test-icon{font-size:38px;margin-bottom:10px}
+.test-card h3{margin:0 0 7px;font-size:20px}
+.test-card p{margin:0;color:var(--muted);line-height:1.5;flex:1}
+.test-meta{font-size:13px;color:var(--muted);margin:12px 0}
+.empty{text-align:center;padding:45px 20px;color:var(--muted)}
+.quiz-wrap{max-width:760px;margin:20px auto}
+.quiz-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:12px}
+.progress{height:9px;background:#e8e9f0;border-radius:20px;overflow:hidden}
+.progress>div{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));transition:.25s}
+.question-card{margin-top:18px}
+.question-no{color:var(--primary);font-weight:800;font-size:14px}
+.question{font-size:25px;line-height:1.35;font-weight:850;margin:9px 0 20px}
+.option{
+  width:100%;text-align:left;padding:16px;border:2px solid var(--border);
+  border-radius:15px;background:#fff;margin:9px 0;transition:.15s
+}
+.option:hover{border-color:#bdb5ff;background:#faf9ff}
+.option.selected{border-color:var(--primary);background:#f1efff}
+.option b{display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;border-radius:50%;background:#eef0f5;margin-right:8px}
+.option.selected b{background:var(--primary);color:#fff}
+.quiz-footer{display:flex;justify-content:space-between;gap:10px;margin-top:18px}
+.result{text-align:center}
+.result-icon{font-size:70px}
+.score{font-size:44px;font-weight:950;color:var(--primary);margin:8px}
+.result h2{font-size:30px;margin:5px 0 10px}
+.result p{color:var(--muted);line-height:1.7}
+.share-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:20px}
+.admin{max-width:1100px;margin:auto}
+.admin-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:18px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.stat strong{display:block;font-size:30px;margin-top:3px}
+.stat small{color:var(--muted)}
+.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:13px;font-weight:800;margin-bottom:6px}
+input,textarea,select{
+  width:100%;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fff;outline:none
+}
+input:focus,textarea:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(108,92,231,.1)}
+textarea{min-height:160px;resize:vertical}
+.form-group{margin-bottom:12px}
+.admin-list{margin-top:15px}
+.admin-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--border)}
+.admin-item:last-child{border-bottom:0}
+.item-title{font-weight:800}
+.item-sub{font-size:13px;color:var(--muted);margin-top:3px}
+.item-actions{display:flex;gap:6px;flex-wrap:wrap}
+.modal{
+  position:fixed;inset:0;background:rgba(17,24,39,.55);z-index:50;display:flex;
+  align-items:center;justify-content:center;padding:16px
+}
+.modal-box{background:#fff;width:min(460px,100%);border-radius:22px;padding:23px;box-shadow:0 30px 70px rgba(0,0,0,.2)}
+.modal-box h3{margin-top:0}
+.toast{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#20242d;color:#fff;
+  padding:12px 17px;border-radius:12px;z-index:100;box-shadow:var(--shadow)
+}
+.admin-tabs{display:flex;gap:8px;overflow:auto;margin-bottom:16px}
+.admin-tab{white-space:nowrap;border:0;border-radius:12px;padding:10px 14px;background:#e9eaf0;font-weight:750}
+.admin-tab.active{background:var(--primary);color:#fff}
+.notice{padding:12px 14px;border-radius:12px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;font-size:13px;line-height:1.5;margin-bottom:15px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}.admin-grid{grid-template-columns:1fr}}
+@media(max-width:560px){
+  .container{padding:18px 13px 40px}.hero{padding:27px 20px;border-radius:22px}
+  .grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}
+  .stat{padding:14px 10px}.stat strong{font-size:24px}.question{font-size:22px}
+  .form-row{grid-template-columns:1fr}.admin-item{align-items:flex-start;flex-direction:column}
+  .item-actions{width:100%}.item-actions button{flex:1}
+}
+
+/* ================= DRIVE LOADING OVERLAY ================= */
+.drive-loading{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(245,247,251,.82);
+  backdrop-filter:blur(10px);
+  transition:opacity .25s ease, visibility .25s ease;
+}
+.drive-loading.hidden{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+.loading-box{
+  width:min(380px,92vw);
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:28px 24px;
+  text-align:center;
+  box-shadow:0 25px 70px rgba(31,41,55,.16);
+}
+.loading-logo{
+  width:68px;
+  height:68px;
+  margin:0 auto 15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:20px;
+  background:linear-gradient(135deg,var(--primary),var(--primary2));
+  color:#fff;
+  font-size:34px;
+  animation:loadingFloat 1.5s ease-in-out infinite;
+}
+.loading-spinner{
+  width:38px;
+  height:38px;
+  margin:0 auto 16px;
+  border:4px solid #e8e8f4;
+  border-top-color:var(--primary);
+  border-radius:50%;
+  animation:loadingSpin .75s linear infinite;
+}
+.loading-title{
+  font-size:19px;
+  font-weight:900;
+  margin-bottom:6px;
+}
+.loading-text{
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.5;
+}
+.loading-progress{
+  height:6px;
+  margin-top:18px;
+  border-radius:10px;
+  overflow:hidden;
+  background:#ececf3;
+}
+.loading-progress>div{
+  height:100%;
+  width:35%;
+  border-radius:10px;
+  background:linear-gradient(90deg,var(--primary),var(--primary2));
+  animation:loadingProgress 1.3s ease-in-out infinite;
+}
+@keyframes loadingSpin{to{transform:rotate(360deg)}}
+@keyframes loadingFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-5px)}
+}
+@keyframes loadingProgress{
+  0%{transform:translateX(-130%)}
+  50%{transform:translateX(90%)}
+  100%{transform:translateX(300%)}
+}
+
+
+/* ================= OWNER WEBSITE CUSTOMIZATION ================= */
+.customize-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.customize-section{margin-bottom:15px}
+.customize-section h3{margin:0 0 13px}
+.color-row{display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center}
+input[type="color"]{height:44px;padding:4px;cursor:pointer}
+.range-row{display:grid;grid-template-columns:1fr 85px;gap:10px;align-items:center}
+.range-row input[type="range"]{padding:0}
+.preview-box{border:1px dashed var(--border);border-radius:16px;padding:14px;background:var(--bg);margin-top:12px}
+.customize-actions{display:flex;gap:8px;flex-wrap:wrap;position:sticky;bottom:10px;z-index:5;padding-top:10px}
+.site-footer{max-width:1100px;margin:auto;padding:0 18px 28px;text-align:center;color:var(--muted);font-size:13px}
+body.compact-mode .container{padding-top:14px}
+body.compact-mode .hero{padding:25px 22px;border-radius:20px}
+body.compact-mode .card{border-radius:14px;padding:16px}
+body.no-animations *{animation:none!important;transition:none!important}
+@media(max-width:800px){.customize-grid{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+
+<div id="driveLoading" class="drive-loading">
+  <div class="loading-box">
+    <div class="loading-logo">✨</div>
+    <div class="loading-spinner"></div>
+    <div id="driveLoadingTitle" class="loading-title">Memuat Yuk Cari Tahu...</div>
+    <div id="driveLoadingText" class="loading-text">Mengambil data terbaru dari Google Drive.</div>
+    <div class="loading-progress"><div></div></div>
+  </div>
+</div>
+<div class="app">
+<header>
+  <div class="nav">
+    <div class="brand" id="siteBrand">${esc(getSiteSettings().brandIcon)} <span>${esc(getSiteSettings().brand)}</span></div>
+    <div class="nav-actions">
+      <button class="icon-btn" onclick="showHome()">Beranda</button>
+      <button class="icon-btn" onclick="openLogin()">⚙ Pemilik</button>
+    </div>
+  </div>
+</header>
+
+<main id="publicView" class="container"></main>
+<main id="adminView" class="container admin hidden"></main>
+
+
+<div id="siteFooter" class="site-footer"></div>
+
+<div id="loginModal" class="modal hidden">
+  <div class="modal-box">
+    <h3>🔐 Area Pemilik</h3>
+    <p style="color:var(--muted)">Masukkan password untuk mengelola tes dan soal.</p>
+    <div class="form-group">
+      <label>Password</label>
+      <input id="loginPassword" type="password" placeholder="Masukkan password" onkeydown="if(event.key==='Enter')login()">
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="secondary-btn" onclick="closeLogin()">Batal</button>
+      <button class="primary-btn" onclick="login()">Masuk</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+/* ==========================================================
+   YUK CARI TAHU - V1
+   Data tes + pengaturan tampilan disimpan di browser sebagai cache.
+   Database utama (termasuk siteSettings) disimpan melalui Google Apps Script.
+   ========================================================== */
+
+const OWNER_PASSWORD = "Bradah18";
+
+/* Jangan masukkan password produksi di HTML jika website
+   dibuka untuk umum. Verifikasi server-side disarankan. */
+
+const CONFIG = {
+  API_URL: "https://script.google.com/macros/s/AKfycbymp6EjqIWFUWeoFHqr3rGFCsREgguNU92x6D_j2kScQADwgsm89-pAocDr-BnzqxEk/exec",
+  APP_NAME: "Yuk Cari Tahu"
+};
+
+const DEFAULT_DATA = {
+  categories: [
+    {
+      id:"tes-jodoh", name:"Tes Jodoh", icon:"❤️",
+      description:"Cari tahu gaya kamu dalam hubungan dan percintaan.",
+      active:true,
+      questions:[
+        {q:"Saat pasangan sedang marah, apa yang paling mungkin kamu lakukan?", options:["Memberinya waktu sendiri","Mengajaknya bicara baik-baik","Mencoba membuatnya tertawa","Ikut marah"], scores:[10,30,25,5]},
+        {q:"Kamu lebih suka menghabiskan waktu bersama pasangan dengan...", options:["Nonton film","Ngobrol panjang","Jalan-jalan","Bermain game"], scores:[20,30,25,15]},
+        {q:"Dalam hubungan, hal yang paling penting menurutmu adalah...", options:["Kepercayaan","Komunikasi","Keseruan","Kebebasan"], scores:[30,30,20,15]}
+      ],
+      results:[
+        {min:0,max:35,icon:"🌱",title:"Masih Perlu Mengenal Diri",description:"Kamu masih punya banyak ruang untuk mengenali gaya hubunganmu."},
+        {min:36,max:60,icon:"💗",title:"Pasangan yang Perhatian",description:"Kamu cukup memperhatikan komunikasi dan kenyamanan dalam hubungan."},
+        {min:61,max:90,icon:"💞",title:"Romantis & Pengertian",description:"Jawabanmu menunjukkan kecenderungan yang kuat pada perhatian dan komunikasi."}
+      ]
+    },
+    {
+      id:"tes-minat", name:"Tes Minat", icon:"🧠",
+      description:"Cari tahu kecenderungan minat yang paling menonjol dalam dirimu.",
+      active:true,
+      questions:[
+        {q:"Kegiatan mana yang paling menarik bagimu?", options:["Membuat desain","Menganalisis data","Bertemu orang baru","Memimpin kegiatan"], scores:[30,25,20,30]},
+        {q:"Jika mendapat waktu luang, kamu cenderung...", options:["Membuat sesuatu","Membaca dan riset","Berkumpul dengan teman","Mengatur proyek kecil"], scores:[30,25,20,30]},
+        {q:"Kamu paling puas ketika...", options:["Menghasilkan karya","Menemukan jawaban","Membantu orang","Mencapai target"], scores:[30,25,25,30]}
+      ],
+      results:[
+        {min:0,max:30,icon:"🌱",title:"Minatmu Masih Beragam",description:"Kamu memiliki beberapa kecenderungan yang cukup seimbang."},
+        {min:31,max:60,icon:"🎨",title:"Kreatif & Eksploratif",description:"Kamu cenderung menikmati aktivitas yang memberi ruang untuk membuat dan mencoba sesuatu."},
+        {min:61,max:100,icon:"🎯",title:"Target-Oriented",description:"Kamu cenderung menikmati tantangan, pencapaian, dan kegiatan yang terarah."}
+      ]
+    }
+  ]
+};
+
+const DEFAULT_SITE_SETTINGS = {
+  brand: "Yuk Cari Tahu",
+  brandIcon: "✨",
+  heroTitle: "Yuk Cari Tahu! ✨",
+  heroSubtitle: "Jawab beberapa pertanyaan sederhana dan cari tahu sesuatu tentang dirimu. Pilih tes yang kamu inginkan, jawab sampai selesai, lalu lihat hasilnya.",
+  sectionTitle: "Pilih Tes Kamu",
+  availableText: "tes tersedia",
+  emptyText: "Belum ada tes yang tersedia.",
+  startButton: "Mulai Tes →",
+  ownerButton: "⚙ Pemilik",
+  homeButton: "Beranda",
+  adminTitle: "Dashboard Pemilik",
+  adminSubtitle: "Kelola kategori, soal, pilihan, skor dan hasil.",
+  footerText: "© Yuk Cari Tahu",
+  pageTitle: "Yuk Cari Tahu",
+  primaryColor: "#6c5ce7",
+  primary2Color: "#8e7dff",
+  backgroundColor: "#f5f7fb",
+  cardColor: "#ffffff",
+  textColor: "#18202a",
+  mutedColor: "#6b7280",
+  borderColor: "#e7e9ef",
+  headerColor: "#ffffff",
+  heroColor1: "#6c5ce7",
+  heroColor2: "#9b8cff",
+  buttonTextColor: "#ffffff",
+  radius: 21,
+  heroRadius: 28,
+  fontScale: 1,
+  compact: false,
+  animations: true
+};
+
+let data = loadData();
+data.siteSettings = normalizeSiteSettings(data.siteSettings);
+let currentTest = null;
+let currentQuestion = 0;
+let answers = [];
+let adminTab = "tests";
+
+
+function normalizeSiteSettings(saved){
+  return Object.assign({}, DEFAULT_SITE_SETTINGS, saved || {});
+}
+
+function applySiteSettings(){
+  const s = normalizeSiteSettings(data.siteSettings);
+  data.siteSettings = s;
+
+  const root = document.documentElement;
+  root.style.setProperty("--bg", s.backgroundColor);
+  root.style.setProperty("--card", s.cardColor);
+  root.style.setProperty("--text", s.textColor);
+  root.style.setProperty("--muted", s.mutedColor);
+  root.style.setProperty("--primary", s.primaryColor);
+  root.style.setProperty("--primary2", s.primary2Color);
+  root.style.setProperty("--border", s.borderColor);
+  root.style.setProperty("--shadow", "0 12px 35px rgba(31,41,55,.09)");
+
+  document.body.style.fontSize = `${Number(s.fontScale || 1)}em`;
+  document.body.classList.toggle("compact-mode", !!s.compact);
+  document.body.classList.toggle("no-animations", s.animations === false);
+
+  const title = String(s.pageTitle || s.brand || "Yuk Cari Tahu");
+  document.title = title;
+
+  const footer = document.getElementById("siteFooter");
+  if(footer) footer.textContent = s.footerText || "";
+
+  const ownerBtn = document.querySelector('button[onclick="openLogin()"]');
+  if(ownerBtn) ownerBtn.textContent = s.ownerButton || "⚙ Pemilik";
+
+  const homeBtn = document.querySelector('button[onclick="showHome()"]');
+  if(homeBtn) homeBtn.textContent = s.homeButton || "Beranda";
+
+  const brand=document.getElementById("siteBrand");
+  if(brand) brand.innerHTML=`${esc(s.brandIcon)} <span>${esc(s.brand)}</span>`;
+
+  const header=document.querySelector("header");
+  if(header) header.style.background=`${s.headerColor}ee`;
+}
+
+function getSiteSettings(){
+  return normalizeSiteSettings(data.siteSettings);
+}
+
+function saveSiteSettings(show=true){
+  data.siteSettings = normalizeSiteSettings(data.siteSettings);
+  localStorage.setItem("yukCariTahuData", JSON.stringify(data));
+  applySiteSettings();
+  renderHome();
+  return syncToDrive(show);
+}
+
+function loadData(){
+  try{
+    const saved = localStorage.getItem("yukCariTahuData");
+    return saved ? JSON.parse(saved) : structuredClone(DEFAULT_DATA);
+  }catch(e){ return structuredClone(DEFAULT_DATA); }
+}
+function saveData(show=false){
+  // localStorage hanya cache/offline fallback.
+  localStorage.setItem("yukCariTahuData", JSON.stringify(data));
+
+  // Database utama: Google Drive melalui Apps Script.
+  return syncToDrive(show);
+}
+function uid(prefix="id"){
+  return prefix+"-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7);
+}
+function esc(s){
+  return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+function toast(msg){
+  const el=document.getElementById("toast"); el.textContent=msg; el.classList.remove("hidden");
+  clearTimeout(window._toast); window._toast=setTimeout(()=>el.classList.add("hidden"),2200);
+}
+function showHome(){
+  document.getElementById("adminView").classList.add("hidden");
+  document.getElementById("publicView").classList.remove("hidden");
+  renderHome();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function renderHome(){
+  const s=getSiteSettings();
+  const active=data.categories.filter(x=>x.active!==false);
+  const heroStyle=`background:linear-gradient(135deg,${esc(s.heroColor1)},${esc(s.heroColor2)});border-radius:${Number(s.heroRadius)||28}px`;
+  document.getElementById("publicView").innerHTML=`
+    <section class="hero" style="${heroStyle}">
+      <h1>${esc(s.heroTitle)}</h1>
+      <p>${esc(s.heroSubtitle)}</p>
+    </section>
+    <div class="section-title"><h2>${esc(s.sectionTitle)}</h2><span style="color:var(--muted);font-size:13px">${active.length} ${esc(s.availableText)}</span></div>
+    <div class="grid">
+      ${active.length ? active.map(t=>`
+        <article class="card test-card" style="border-radius:${Number(s.radius)||21}px">
+          <div class="test-icon">${esc(t.icon)}</div>
+          <h3>${esc(t.name)}</h3>
+          <p>${esc(t.description)}</p>
+          <div class="test-meta">${t.questions.length} pertanyaan</div>
+          <button class="primary-btn" onclick="startTest('${t.id}')">${esc(s.startButton)}</button>
+        </article>`).join("") : `<div class="card empty" style="grid-column:1/-1">${esc(s.emptyText)}</div>`}
+    </div>`;
+  applySiteSettings();
+}
+
+function startTest(id){
+  currentTest=data.categories.find(x=>x.id===id);
+  if(!currentTest || !currentTest.questions.length){toast("Tes belum memiliki soal.");return}
+  currentQuestion=0; answers=[];
+  renderQuiz();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function renderQuiz(){
+  const t=currentTest, q=t.questions[currentQuestion], total=t.questions.length;
+  const selected=answers[currentQuestion];
+  document.getElementById("publicView").innerHTML=`
+    <div class="quiz-wrap">
+      <div class="quiz-head">
+        <div><b>${esc(t.icon)} ${esc(t.name)}</b></div>
+        <div style="color:var(--muted);font-size:13px">${currentQuestion+1} / ${total}</div>
+      </div>
+      <div class="progress"><div style="width:${((currentQuestion+1)/total)*100}%"></div></div>
+      <section class="card question-card" style="border-radius:${Number(getSiteSettings().radius)||21}px">
+        <div class="question-no">PERTANYAAN ${currentQuestion+1}</div>
+        <div class="question">${esc(q.q)}</div>
+        ${q.options.map((o,i)=>`
+          <button class="option ${selected===i?'selected':''}" onclick="chooseAnswer(${i})">
+            <b>${String.fromCharCode(65+i)}</b>${esc(o)}
+          </button>`).join("")}
+        <div class="quiz-footer">
+          <button class="secondary-btn" onclick="${currentQuestion===0?'showHome()':'prevQuestion()'}">← Kembali</button>
+          <button class="primary-btn" onclick="nextQuestion()">${currentQuestion===total-1?'Lihat Hasil':'Lanjut →'}</button>
+        </div>
+      </section>
+    </div>`;
+}
+function chooseAnswer(i){answers[currentQuestion]=i;renderQuiz()}
+function prevQuestion(){if(currentQuestion>0){currentQuestion--;renderQuiz()}}
+function nextQuestion(){
+  if(answers[currentQuestion]===undefined){toast("Pilih salah satu jawaban dulu.");return}
+  if(currentQuestion<currentTest.questions.length-1){currentQuestion++;renderQuiz()}
+  else showResult();
+}
+function showResult(){
+  const t=currentTest;
+  let total=0;
+  answers.forEach((a,i)=>{ total += Number(t.questions[i].scores?.[a] ?? 0); });
+  const max=t.questions.reduce((s,q)=>s+Math.max(...(q.scores||[0])),0);
+  const pct=max ? Math.round(total/max*100) : 0;
+  let result=(t.results||[]).find(r=>total>=Number(r.min)&&total<=Number(r.max));
+  if(!result && t.results?.length) result=t.results[t.results.length-1];
+  result=result||{icon:"✨",title:"Hasil Tes Kamu",description:"Terima kasih sudah mengikuti tes ini."};
+  document.getElementById("publicView").innerHTML=`
+    <div class="quiz-wrap">
+      <section class="card result" style="border-radius:${Number(getSiteSettings().radius)||21}px">
+        <div class="result-icon">${esc(result.icon||"✨")}</div>
+        <div style="color:var(--muted);font-weight:700">HASIL ${esc(t.name).toUpperCase()}</div>
+        <div class="score">${pct}%</div>
+        <h2>${esc(result.title)}</h2>
+        <p>${esc(result.description)}</p>
+        <div class="share-row">
+          <button class="primary-btn" onclick="shareResult(${pct})">📤 Bagikan Hasil</button>
+          <button class="secondary-btn" onclick="startTest('${t.id}')">🔄 Coba Lagi</button>
+          <button class="secondary-btn" onclick="showHome()">🏠 Tes Lain</button>
+        </div>
+      </section>
+    </div>`;
+}
+async function shareResult(pct){
+  const text=`Aku baru mencoba ${currentTest.name} di Yuk Cari Tahu dan mendapatkan hasil ${pct}% ${currentTest.icon||"✨"}`;
+  if(navigator.share){try{await navigator.share({title:"Yuk Cari Tahu",text});return}catch(e){}}
+  try{await navigator.clipboard.writeText(text);toast("Hasil disalin. Tinggal paste ke WhatsApp!")}catch(e){toast(text)}
+}
+
+/* ================= ADMIN ================= */
+function openLogin(){
+  document.getElementById("loginModal").classList.remove("hidden");
+  setTimeout(()=>document.getElementById("loginPassword").focus(),50);
+}
+function closeLogin(){document.getElementById("loginModal").classList.add("hidden");document.getElementById("loginPassword").value=""}
+function login(){
+  const p=document.getElementById("loginPassword").value;
+  if(p===OWNER_PASSWORD){
+    closeLogin();
+    document.getElementById("publicView").classList.add("hidden");
+    document.getElementById("adminView").classList.remove("hidden");
+    renderAdmin();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }else toast("Password salah.");
+}
+function logout(){showHome()}
+function renderAdmin(){
+  const totalQuestions=data.categories.reduce((s,t)=>s+t.questions.length,0);
+  document.getElementById("adminView").innerHTML=`
+    <div class="admin-top">
+      <div><h1 style="margin:0">${esc(getSiteSettings().adminTitle)}</h1><div style="color:var(--muted);font-size:13px">${esc(getSiteSettings().adminSubtitle)}</div></div>
+      <button class="secondary-btn" onclick="logout()">Keluar</button>
+    </div>
+    <div class="stats">
+      <div class="card stat"><small>Total Tes</small><strong>${data.categories.length}</strong></div>
+      <div class="card stat"><small>Total Soal</small><strong>${totalQuestions}</strong></div>
+      <div class="card stat"><small>Status</small><strong>${data.categories.filter(x=>x.active!==false).length}</strong></div>
+    </div>
+    <div class="admin-tabs">
+      <button class="admin-tab ${adminTab==='tests'?'active':''}" onclick="adminTab='tests';renderAdmin()">📚 Tes</button>
+      <button class="admin-tab ${adminTab==='questions'?'active':''}" onclick="adminTab='questions';renderAdmin()">📝 Soal</button>
+      <button class="admin-tab ${adminTab==='results'?'active':''}" onclick="adminTab='results';renderAdmin()">🏆 Hasil</button>
+      <button class="admin-tab ${adminTab==='backup'?'active':''}" onclick="adminTab='backup';renderAdmin()">☁️ Data</button>
+      <button class="admin-tab ${adminTab==='customize'?'active':''}" onclick="adminTab='customize';renderAdmin()">🎨 Tampilan</button>
+    </div>
+    ${adminTab==='tests'?adminTests():adminTab==='questions'?adminQuestions():adminTab==='results'?adminResults():adminTab==='backup'?adminBackup():adminCustomize()}
+  `;
+}
+function adminTests(){
+ return `<div class="admin-grid">
+   <section class="card">
+    <h2>➕ Buat Tes / Kategori</h2>
+    <div class="form-row">
+      <div class="form-group"><label>Nama Tes</label><input id="newName" placeholder="Contoh: Tes Maskulinitas"></div>
+      <div class="form-group"><label>Ikon</label><input id="newIcon" value="✨" maxlength="4"></div>
+    </div>
+    <div class="form-group"><label>Deskripsi</label><input id="newDesc" placeholder="Deskripsi singkat tes"></div>
+    <button class="primary-btn" onclick="addTest()">Simpan Tes</button>
+   </section>
+   <section class="card">
+    <h2>📚 Daftar Tes</h2>
+    <div class="admin-list">
+      ${data.categories.map(t=>`
+       <div class="admin-item">
+        <div><div class="item-title">${esc(t.icon)} ${esc(t.name)}</div><div class="item-sub">${t.questions.length} soal • ${t.active!==false?'Aktif':'Nonaktif'}</div></div>
+        <div class="item-actions">
+          <button class="secondary-btn" onclick="toggleTest('${t.id}')">${t.active!==false?'Nonaktifkan':'Aktifkan'}</button>
+          <button class="secondary-btn" onclick="editTest('${t.id}')">Edit</button>
+          <button class="danger-btn" onclick="deleteTest('${t.id}')">Hapus</button>
+        </div>
+       </div>`).join("")}
+    </div>
+   </section>
+ </div>`;
+}
+function addTest(){
+ const name=document.getElementById("newName").value.trim();
+ if(!name){toast("Nama tes wajib diisi.");return}
+ data.categories.push({id:uid("test"),name,icon:document.getElementById("newIcon").value.trim()||"✨",description:document.getElementById("newDesc").value.trim()||"Yuk cari tahu lebih banyak tentang dirimu.",active:true,questions:[],results:[]});
+ saveData();adminTab="tests";renderAdmin();toast("Tes berhasil dibuat.");
+}
+function editTest(id){
+ const t=data.categories.find(x=>x.id===id); if(!t)return;
+ const name=prompt("Nama tes:",t.name); if(name===null)return;
+ const desc=prompt("Deskripsi:",t.description); if(desc===null)return;
+ const icon=prompt("Ikon:",t.icon); if(icon===null)return;
+ t.name=name.trim()||t.name;t.description=desc.trim();t.icon=icon.trim()||"✨";
+ saveData();renderAdmin();toast("Tes diperbarui.");
+}
+function toggleTest(id){const t=data.categories.find(x=>x.id===id);t.active=t.active===false;saveData();renderAdmin()}
+function deleteTest(id){
+ const t=data.categories.find(x=>x.id===id);
+ if(confirm(`Hapus "${t.name}" beserta semua soalnya?`)){data.categories=data.categories.filter(x=>x.id!==id);saveData();renderAdmin();toast("Tes dihapus.")}
+}
+
+function adminQuestions(){
+ return `<section class="card">
+  <div class="form-row">
+    <div><label>Pilih Tes</label><select id="questionTest" onchange="renderQuestionEditor()">
+      ${data.categories.map(t=>`<option value="${t.id}">${esc(t.icon)} ${esc(t.name)}</option>`).join("")}
+    </select></div>
+    <div><label>Format paste</label><div style="font-size:13px;color:var(--muted);padding-top:9px">Pertanyaan → A/B/C/D → Jawaban atau Skor</div></div>
+  </div>
+  <div id="questionEditor" style="margin-top:15px"></div>
+ </section>`;
+}
+function renderQuestionEditor(){
+ const sel=document.getElementById("questionTest"); if(!sel)return;
+ const t=data.categories.find(x=>x.id===sel.value); if(!t)return;
+ document.getElementById("questionEditor").innerHTML=`
+   <div class="notice"><b>Format cepat:</b><br>
+   Apa kegiatan favoritmu?<br>A. Membaca<br>B. Olahraga<br>C. Memasak<br>D. Gaming<br>Jawaban: A<br><br>
+   Kamu juga bisa memakai <b>Skor: 10,20,30,40</b> untuk sistem hasil.</div>
+   <div class="form-group"><label>Paste Soal</label>
+   <textarea id="pasteQuestions" placeholder="Pertanyaan 1?
+A. Pilihan A
+B. Pilihan B
+C. Pilihan C
+D. Pilihan D
+Jawaban: A
+
+Pertanyaan 2?
+A. ...
+B. ...
+C. ...
+D. ...
+Jawaban: B"></textarea></div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="primary-btn" onclick="importQuestions()">📥 Import Soal</button>
+    <button class="secondary-btn" onclick="showQuestions('${t.id}')">📋 Lihat Soal (${t.questions.length})</button>
+   </div>`;
+}
+function importQuestions(){
+ const id=document.getElementById("questionTest").value;
+ const t=data.categories.find(x=>x.id===id);
+ const text=document.getElementById("pasteQuestions").value.trim();
+ if(!text){toast("Paste soal terlebih dahulu.");return}
+ const blocks=text.split(/\n\s*\n+/).map(x=>x.trim()).filter(Boolean);
+ let added=0;
+ for(const block of blocks){
+   const lines=block.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+   if(lines.length<3)continue;
+   let qLine=lines.find(x=>!/^(A|B|C|D)\s*[\.\):]/i.test(x) && !/^jawaban\s*:/i.test(x) && !/^skor\s*:/i.test(x));
+   if(!qLine) qLine=lines[0];
+   const opts=[];
+   for(const line of lines){
+     const m=line.match(/^([A-D])\s*[\.\):\-]\s*(.+)$/i);
+     if(m)opts.push(m[2].trim());
+   }
+   if(opts.length<2)continue;
+   const ansLine=lines.find(x=>/^jawaban\s*:/i.test(x));
+   const scoreLine=lines.find(x=>/^skor\s*:/i.test(x));
+   let scores=opts.map((_,i)=>i+1);
+   if(scoreLine){
+     const nums=scoreLine.split(":")[1].split(/[,;|]/).map(Number).filter(n=>!Number.isNaN(n));
+     if(nums.length===opts.length)scores=nums;
+   }
+   if(ansLine){
+     const raw=ansLine.split(":").slice(1).join(":").trim().toUpperCase();
+     const idx="ABCD".indexOf(raw.charAt(0));
+     if(idx>=0)scores=scores.map((s,i)=>i===idx?Math.max(...scores)+10:s);
+   }
+   t.questions.push({q:qLine.replace(/^(\d+[\.\)]\s*)/,""),options:opts,scores});
+   added++;
+ }
+ saveData();renderAdmin();toast(`${added} soal berhasil diimport.`);
+}
+function showQuestions(id){
+ const t=data.categories.find(x=>x.id===id);
+ const html=t.questions.map((q,i)=>`
+  <div class="admin-item">
+   <div><div class="item-title">${i+1}. ${esc(q.q)}</div><div class="item-sub">${q.options.map((o,j)=>String.fromCharCode(65+j)+". "+o).join(" • ")}</div></div>
+   <div class="item-actions"><button class="secondary-btn" onclick="editQuestion('${t.id}',${i})">Edit</button><button class="danger-btn" onclick="deleteQuestion('${t.id}',${i})">Hapus</button></div>
+  </div>`).join("") || `<div class="empty">Belum ada soal.</div>`;
+ document.getElementById("questionEditor").innerHTML=`
+  <button class="secondary-btn" onclick="renderAdmin()">← Kembali</button>
+  <h3>${esc(t.icon)} ${esc(t.name)}</h3>${html}`;
+}
+function editQuestion(tid,i){
+ const t=data.categories.find(x=>x.id===tid), q=t.questions[i];
+ const nq=prompt("Pertanyaan:",q.q);if(nq===null)return;
+ for(let j=0;j<q.options.length;j++){const no=prompt(`Pilihan ${String.fromCharCode(65+j)}:`,q.options[j]);if(no!==null)q.options[j]=no}
+ q.q=nq;saveData();renderAdmin();toast("Soal diperbarui.");
+}
+function deleteQuestion(tid,i){
+ if(confirm("Hapus soal ini?")){data.categories.find(x=>x.id===tid).questions.splice(i,1);saveData();renderAdmin();toast("Soal dihapus.")}
+}
+
+function adminResults(){
+ return `<section class="card">
+  <h2>🏆 Pengaturan Hasil Tes</h2>
+  <div class="form-group"><label>Pilih Tes</label><select id="resultTest" onchange="renderResultsEditor()">${data.categories.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join("")}</select></div>
+  <div id="resultsEditor"></div>
+ </section>`;
+}
+function renderResultsEditor(){
+ const sel=document.getElementById("resultTest");if(!sel)return;
+ const t=data.categories.find(x=>x.id===sel.value);
+ const results=t.results||[];
+ document.getElementById("resultsEditor").innerHTML=`
+  <div class="notice">Rentang skor menentukan hasil akhir. Jika menggunakan skor 0–100, misalnya 0–30, 31–60, 61–100.</div>
+  ${results.map((r,i)=>`
+   <div class="card" style="box-shadow:none;margin:10px 0;border:1px solid var(--border)">
+    <div class="form-row">
+      <div><label>Ikon</label><input id="ri${i}" value="${esc(r.icon||'✨')}"></div>
+      <div><label>Judul</label><input id="rt${i}" value="${esc(r.title||'')}"></div>
+    </div>
+    <div class="form-row" style="margin-top:10px">
+      <div><label>Skor Minimum</label><input id="rmin${i}" type="number" value="${r.min}"></div>
+      <div><label>Skor Maksimum</label><input id="rmax${i}" type="number" value="${r.max}"></div>
+    </div>
+    <div class="form-group" style="margin-top:10px"><label>Deskripsi</label><textarea id="rd${i}" style="min-height:90px">${esc(r.description||'')}</textarea></div>
+    <button class="danger-btn" onclick="deleteResult('${t.id}',${i})">Hapus Hasil</button>
+   </div>`).join("")}
+  <button class="secondary-btn" onclick="addResult('${t.id}')">+ Tambah Hasil</button>
+  <button class="primary-btn" onclick="saveResults('${t.id}')">💾 Simpan Hasil</button>`;
+}
+function addResult(id){data.categories.find(x=>x.id===id).results.push({min:0,max:10,icon:"✨",title:"Hasil Baru",description:"Deskripsi hasil baru."});saveData();renderAdmin()}
+function deleteResult(id,i){data.categories.find(x=>x.id===id).results.splice(i,1);saveData();renderAdmin()}
+function saveResults(id){
+ const t=data.categories.find(x=>x.id===id), arr=t.results||[];
+ arr.forEach((r,i)=>{
+   r.icon=document.getElementById("ri"+i).value;
+   r.title=document.getElementById("rt"+i).value;
+   r.min=Number(document.getElementById("rmin"+i).value);
+   r.max=Number(document.getElementById("rmax"+i).value);
+   r.description=document.getElementById("rd"+i).value;
+ });
+ saveData();toast("Pengaturan hasil disimpan.");
+}
+
+
+function adminCustomize(){
+  const s=getSiteSettings();
+  const color=(id,label,value)=>`<div class="form-group"><label>${label}</label><div class="color-row"><input id="${id}" type="text" value="${esc(value)}" maxlength="7"><input id="${id}Color" type="color" value="${esc(value)}" oninput="document.getElementById('${id}').value=this.value;previewSiteSettings()"></div></div>`;
+  return `<section class="card">
+    <div class="admin-top">
+      <div>
+        <h2 style="margin:0">🎨 Kustomisasi Website</h2>
+        <div style="color:var(--muted);font-size:13px">Semua perubahan di sini berlaku untuk tampilan publik dan dapat disimpan ke Google Drive.</div>
+      </div>
+      <button class="secondary-btn" onclick="resetSiteSettings()">↩ Reset Tampilan</button>
+    </div>
+
+    <div class="customize-grid">
+      <section class="card customize-section" style="box-shadow:none">
+        <h3>✍️ Tulisan</h3>
+        <div class="form-group"><label>Judul browser</label><input id="setPageTitle" value="${esc(s.pageTitle)}"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Ikon / logo teks</label><input id="setBrandIcon" value="${esc(s.brandIcon)}" maxlength="8"></div>
+          <div class="form-group"><label>Nama website</label><input id="setBrand" value="${esc(s.brand)}"></div>
+        </div>
+        <div class="form-group"><label>Judul utama (Hero)</label><input id="setHeroTitle" value="${esc(s.heroTitle)}"></div>
+        <div class="form-group"><label>Deskripsi utama</label><textarea id="setHeroSubtitle" style="min-height:100px">${esc(s.heroSubtitle)}</textarea></div>
+        <div class="form-group"><label>Judul daftar tes</label><input id="setSectionTitle" value="${esc(s.sectionTitle)}"></div>
+        <div class="form-group"><label>Teks "tes tersedia"</label><input id="setAvailableText" value="${esc(s.availableText)}"></div>
+        <div class="form-group"><label>Tombol mulai tes</label><input id="setStartButton" value="${esc(s.startButton)}"></div>
+        <div class="form-group"><label>Tombol Beranda</label><input id="setHomeButton" value="${esc(s.homeButton)}"></div>
+        <div class="form-group"><label>Tombol Pemilik</label><input id="setOwnerButton" value="${esc(s.ownerButton)}"></div>
+        <div class="form-group"><label>Footer</label><input id="setFooterText" value="${esc(s.footerText)}"></div>
+      </section>
+
+      <section class="card customize-section" style="box-shadow:none">
+        <h3>🎨 Warna</h3>
+        ${color("setPrimaryColor","Warna utama",s.primaryColor)}
+        ${color("setPrimary2Color","Warna utama 2",s.primary2Color)}
+        ${color("setHeroColor1","Hero warna 1",s.heroColor1)}
+        ${color("setHeroColor2","Hero warna 2",s.heroColor2)}
+        ${color("setBackgroundColor","Latar website",s.backgroundColor)}
+        ${color("setCardColor","Latar kartu",s.cardColor)}
+        ${color("setTextColor","Warna teks",s.textColor)}
+        ${color("setMutedColor","Warna teks sekunder",s.mutedColor)}
+        ${color("setBorderColor","Warna garis",s.borderColor)}
+        <div class="form-group"><label>Warna header</label><input id="setHeaderColor" type="color" value="${esc(s.headerColor)}" oninput="previewSiteSettings()"></div>
+      </section>
+
+      <section class="card customize-section" style="box-shadow:none">
+        <h3>📐 Bentuk & Ukuran</h3>
+        <div class="form-group"><label>Radius kartu: <span id="radiusValue">${Number(s.radius)}</span> px</label>
+          <input id="setRadius" type="range" min="6" max="36" value="${Number(s.radius)}" oninput="document.getElementById('radiusValue').textContent=this.value;previewSiteSettings()">
+        </div>
+        <div class="form-group"><label>Radius Hero: <span id="heroRadiusValue">${Number(s.heroRadius)}</span> px</label>
+          <input id="setHeroRadius" type="range" min="8" max="45" value="${Number(s.heroRadius)}" oninput="document.getElementById('heroRadiusValue').textContent=this.value;previewSiteSettings()">
+        </div>
+        <div class="form-group"><label>Ukuran teks keseluruhan: <span id="fontScaleValue">${Number(s.fontScale).toFixed(2)}×</span></label>
+          <input id="setFontScale" type="range" min="0.85" max="1.2" step="0.01" value="${Number(s.fontScale)}" oninput="document.getElementById('fontScaleValue').textContent=Number(this.value).toFixed(2)+'×';previewSiteSettings()">
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;margin:12px 0"><input id="setCompact" type="checkbox" ${s.compact?'checked':''} onchange="previewSiteSettings()"> Mode ringkas</label>
+        <label style="display:flex;align-items:center;gap:8px;margin:12px 0"><input id="setAnimations" type="checkbox" ${s.animations!==false?'checked':''} onchange="previewSiteSettings()"> Aktifkan animasi</label>
+      </section>
+
+      <section class="card customize-section" style="box-shadow:none">
+        <h3>👀 Pratinjau</h3>
+        <div class="preview-box">
+          <div style="font-size:13px;color:var(--muted)">Pratinjau langsung</div>
+          <div style="font-size:28px;font-weight:900;margin:8px 0" id="customPreviewTitle">${esc(s.heroTitle)}</div>
+          <div id="customPreviewText" style="color:var(--muted);line-height:1.5">${esc(s.heroSubtitle)}</div>
+          <button class="primary-btn" style="margin-top:14px" id="customPreviewButton">${esc(s.startButton)}</button>
+        </div>
+        <div class="notice" style="margin-top:12px"><b>Penting:</b> klik <b>Simpan ke Drive</b> agar perubahan tampil juga saat website dibuka dari perangkat/browser lain.</div>
+      </section>
+    </div>
+
+    <div class="customize-actions">
+      <button class="primary-btn" onclick="saveCustomizedSettings()">☁️ Simpan Tampilan ke Drive</button>
+      <button class="secondary-btn" onclick="previewSiteSettings()">👁 Terapkan Pratinjau</button>
+      <button class="secondary-btn" onclick="renderHome();toast('Pratinjau ditampilkan.')">🏠 Lihat Website</button>
+    </div>
+  </section>`;
+}
+
+function readCustomizedSettings(){
+  const s=getSiteSettings();
+  const val=id=>document.getElementById(id)?.value;
+  const checked=id=>!!document.getElementById(id)?.checked;
+  return Object.assign({},s,{
+    pageTitle:val("setPageTitle") ?? s.pageTitle,
+    brand:val("setBrand") ?? s.brand,
+    brandIcon:val("setBrandIcon") ?? s.brandIcon,
+    heroTitle:val("setHeroTitle") ?? s.heroTitle,
+    heroSubtitle:val("setHeroSubtitle") ?? s.heroSubtitle,
+    sectionTitle:val("setSectionTitle") ?? s.sectionTitle,
+    availableText:val("setAvailableText") ?? s.availableText,
+    startButton:val("setStartButton") ?? s.startButton,
+    homeButton:val("setHomeButton") ?? s.homeButton,
+    ownerButton:val("setOwnerButton") ?? s.ownerButton,
+    footerText:val("setFooterText") ?? s.footerText,
+    primaryColor:val("setPrimaryColor") ?? s.primaryColor,
+    primary2Color:val("setPrimary2Color") ?? s.primary2Color,
+    heroColor1:val("setHeroColor1") ?? s.heroColor1,
+    heroColor2:val("setHeroColor2") ?? s.heroColor2,
+    backgroundColor:val("setBackgroundColor") ?? s.backgroundColor,
+    cardColor:val("setCardColor") ?? s.cardColor,
+    textColor:val("setTextColor") ?? s.textColor,
+    mutedColor:val("setMutedColor") ?? s.mutedColor,
+    borderColor:val("setBorderColor") ?? s.borderColor,
+    headerColor:document.getElementById("setHeaderColor")?.value ?? s.headerColor,
+    radius:Number(val("setRadius") ?? s.radius),
+    heroRadius:Number(val("setHeroRadius") ?? s.heroRadius),
+    fontScale:Number(val("setFontScale") ?? s.fontScale),
+    compact:checked("setCompact"),
+    animations:checked("setAnimations")
+  });
+}
+
+function previewSiteSettings(){
+  if(!document.getElementById("setPageTitle")) return;
+  data.siteSettings=readCustomizedSettings();
+  applySiteSettings();
+
+  const title=document.getElementById("customPreviewTitle");
+  const text=document.getElementById("customPreviewText");
+  const btn=document.getElementById("customPreviewButton");
+  if(title) title.textContent=data.siteSettings.heroTitle;
+  if(text) text.textContent=data.siteSettings.heroSubtitle;
+  if(btn) btn.textContent=data.siteSettings.startButton;
+
+  const header=document.querySelector("header");
+  if(header) header.style.background=`${data.siteSettings.headerColor}ee`;
+}
+
+async function saveCustomizedSettings(){
+  previewSiteSettings();
+  localStorage.setItem("yukCariTahuData",JSON.stringify(data));
+  const ok=await syncToDrive(true);
+  if(ok) toast("🎨 Tampilan berhasil disimpan ke Google Drive.");
+}
+
+function resetSiteSettings(){
+  if(!confirm("Kembalikan semua tampilan website ke pengaturan awal?")) return;
+  data.siteSettings=structuredClone(DEFAULT_SITE_SETTINGS);
+  localStorage.setItem("yukCariTahuData",JSON.stringify(data));
+  applySiteSettings();
+  renderAdmin();
+  toast("Tampilan dikembalikan ke default.");
+}
+
+
+function adminBackup(){
+ return `<section class="admin-grid">
+  <section class="card">
+   <h2>💾 Data Lokal</h2>
+   <p style="color:var(--muted);line-height:1.6">Data tersimpan otomatis di browser. Import sekarang mendukung <b>database lengkap</b>, <b>1 tes saja</b>, atau <b>beberapa tes sekaligus</b>.</p>
+   <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="primary-btn" onclick="exportData()">⬇️ Export JSON</button>
+    <label class="secondary-btn" style="cursor:pointer">⬆️ Import JSON<input type="file" accept=".json,application/json" hidden onchange="importData(event)"></label>
+   </div>
+   <div class="notice" style="margin-top:12px">Contoh yang sekarang bisa langsung di-upload: JSON Tes Maskulinitas yang berisi <b>id, name, icon, description, questions, results</b>.</div>
+  </section>
+  <section class="card">
+   <h2>☁️ Google Drive</h2>
+   <p style="color:var(--muted);line-height:1.6">
+     Google Drive menjadi <b>database utama</b>. Setiap kali kamu menambah,
+     mengedit, menghapus, atau mengimport tes/soal, data akan dikirim ke Drive.
+     Saat website dibuka, data terbaru dari Drive akan dimuat terlebih dahulu.
+   </p>
+   <div class="notice">API saat ini: ${CONFIG.API_URL ? "🟢 Terpasang" : "🔴 Belum dipasang"}</div>
+   <div style="display:flex;gap:8px;flex-wrap:wrap">
+     <button class="primary-btn" onclick="syncToDrive(true)">☁️ Simpan ke Drive</button>
+     <button id="refreshDriveBtn" class="secondary-btn" onclick="refreshFromDrive()">🔄 Muat dari Drive</button>
+   </div>
+  </section>
+ </section>`;
+}
+function exportData(){
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="yuk-cari-tahu-backup.json";a.click();URL.revokeObjectURL(a.href);
+}
+function importData(e){
+ const file=e.target.files[0];if(!file)return;
+ const r=new FileReader();
+ r.onload=()=>{try{
+   const x=JSON.parse(r.result);
+
+   // FORMAT 1: database lengkap { categories: [...] }
+   if(Array.isArray(x.categories)){
+     if(!x.categories.every(t=>t && t.name && Array.isArray(t.questions))) throw Error("bad-db");
+     data=x;
+     saveData();
+     renderAdmin();
+     toast(`${x.categories.length} tes berhasil diimport dan disimpan.`);
+     return;
+   }
+
+   // FORMAT 2: satu tes { id, name, questions, results }
+   if(x.name && Array.isArray(x.questions)){
+     const test = normalizeImportedTest(x);
+     const existing = data.categories.findIndex(t=>t.id===test.id);
+     if(existing >= 0){
+       if(confirm(`Tes "${test.name}" sudah ada. Ganti tes lama dengan data ini?`)){
+         data.categories[existing]=test;
+       }else{
+         return;
+       }
+     }else{
+       data.categories.push(test);
+     }
+     saveData();
+     renderAdmin();
+     toast(`Tes "${test.name}" berhasil diimport dan disimpan.`);
+     return;
+   }
+
+   // FORMAT 3: array berisi beberapa tes
+   if(Array.isArray(x) && x.length && x.every(t=>t && t.name && Array.isArray(t.questions))){
+     x.forEach(t=>{
+       const test=normalizeImportedTest(t);
+       const existing=data.categories.findIndex(c=>c.id===test.id);
+       if(existing>=0) data.categories[existing]=test;
+       else data.categories.push(test);
+     });
+     saveData();
+     renderAdmin();
+     toast(`${x.length} tes berhasil diimport dan disimpan.`);
+     return;
+   }
+
+   throw Error("unknown-format");
+ }catch(err){
+   console.error(err);
+   toast("JSON tidak sesuai format Yuk Cari Tahu.");
+ }};
+ r.readAsText(file);
+}
+
+function normalizeImportedTest(x){
+  const test = {
+    id: x.id || uid("test"),
+    name: String(x.name || "Tes Baru"),
+    icon: String(x.icon || "✨"),
+    description: String(x.description || "Yuk cari tahu lebih banyak tentang dirimu."),
+    active: x.active !== false,
+    questions: [],
+    results: Array.isArray(x.results) ? x.results : []
+  };
+
+  if(Array.isArray(x.questions)){
+    test.questions=x.questions.map(q=>{
+      const options=Array.isArray(q.options) ? q.options.map(String) : [];
+      let scores=Array.isArray(q.scores) ? q.scores.map(Number) : [];
+      if(scores.length!==options.length){
+        scores=options.map((_,i)=>i+1);
+      }
+      return {
+        q:String(q.q || q.question || ""),
+        options,
+        scores
+      };
+    }).filter(q=>q.q && q.options.length>=2);
+  }
+
+  // Bila hasil belum tersedia, buat hasil otomatis berdasarkan total skor.
+  if(!test.results.length && test.questions.length){
+    const max=test.questions.reduce((s,q)=>s+Math.max(...q.scores),0);
+    test.results=[
+      {min:0,max:Math.floor(max*.30),icon:"🌱",title:"Masih Banyak Ruang untuk Berkembang",description:"Jawabanmu menunjukkan kecenderungan yang cukup beragam. Yuk terus kenali dirimu."},
+      {min:Math.floor(max*.30)+1,max:Math.floor(max*.60),icon:"😎",title:"Cukup Kuat",description:"Jawabanmu menunjukkan beberapa kecenderungan karakter yang cukup kuat."},
+      {min:Math.floor(max*.60)+1,max:Math.floor(max*.80),icon:"💪",title:"Kuat & Tegas",description:"Jawabanmu menunjukkan kecenderungan yang kuat terhadap ketegasan dan kepercayaan diri."},
+      {min:Math.floor(max*.80)+1,max:max,icon:"🔥",title:"Strong Character",description:"Jawabanmu menunjukkan kecenderungan yang sangat kuat terhadap karakter tegas, percaya diri, dan bertanggung jawab."}
+    ];
+  }
+
+  return test;
+}
+
+function showDriveLoading(title="Memuat Yuk Cari Tahu...", text="Mengambil data terbaru dari Google Drive."){
+  const overlay=document.getElementById("driveLoading");
+  const titleEl=document.getElementById("driveLoadingTitle");
+  const textEl=document.getElementById("driveLoadingText");
+  if(titleEl) titleEl.textContent=title;
+  if(textEl) textEl.textContent=text;
+  if(overlay) overlay.classList.remove("hidden");
+}
+
+function hideDriveLoading(){
+  const overlay=document.getElementById("driveLoading");
+  if(overlay) overlay.classList.add("hidden");
+}
+
+async function loadFromDrive(show=false){
+  showDriveLoading(
+    "Memuat data...",
+    "Mengambil data terbaru dari Google Drive."
+  );
+
+  if(!CONFIG.API_URL){
+    if(show) toast("URL backend belum dipasang.");
+    hideDriveLoading();
+    return false;
+  }
+
+  try{
+    const response = await fetch(CONFIG.API_URL + "?action=load&ts=" + Date.now(), {
+      method:"GET",
+      cache:"no-store"
+    });
+
+    if(!response.ok) throw new Error("HTTP " + response.status);
+
+    const result = await response.json();
+
+    if(result && result.success && result.data &&
+       Array.isArray(result.data.categories)){
+
+      // Google Drive adalah sumber data utama.
+      data = result.data;
+      data.siteSettings = normalizeSiteSettings(data.siteSettings);
+      applySiteSettings();
+
+      // Simpan salinan lokal hanya sebagai cache/offline fallback.
+      localStorage.setItem("yukCariTahuData", JSON.stringify(data));
+
+      if(show) toast("✅ Data terbaru berhasil dimuat dari Google Drive.");
+      return true;
+    }
+
+    throw new Error(
+      result && result.message
+        ? result.message
+        : "Respons database tidak valid."
+    );
+
+  }catch(e){
+    console.warn("Gagal memuat database dari Google Drive:", e);
+
+    if(show){
+      toast("⚠️ Drive tidak dapat diakses. Data lokal digunakan sementara.");
+    }
+
+    hideDriveLoading();
+    return false;
+  }
+}
+
+async function syncToDrive(show=false){
+  showDriveLoading(
+    "Menyimpan data...",
+    "Sedang menyimpan perubahan ke Google Drive."
+  );
+
+  if(!CONFIG.API_URL){
+    if(show) toast("URL backend belum dipasang.");
+    hideDriveLoading();
+    return false;
+  }
+
+  try{
+    const response = await fetch(CONFIG.API_URL, {
+      method:"POST",
+      headers:{
+        "Content-Type":"text/plain;charset=utf-8"
+      },
+      body:JSON.stringify({
+        action:"save",
+        data:data
+      }),
+      redirect:"follow"
+    });
+
+    const text = await response.text();
+    let result = null;
+
+    try{
+      result = JSON.parse(text);
+    }catch(e){
+      // Beberapa deployment Apps Script dapat mengembalikan
+      // respons yang bukan JSON meskipun proses POST berhasil.
+    }
+
+    if(result && result.success === false){
+      throw new Error(result.message || "Server menolak penyimpanan.");
+    }
+
+    if(show){
+      toast("☁️ Semua data berhasil disimpan ke Google Drive.");
+    }
+
+    hideDriveLoading();
+    return true;
+
+  }catch(e){
+    console.error("Gagal menyimpan ke Google Drive:", e);
+
+    if(show){
+      toast("❌ Gagal menyimpan ke Google Drive.");
+    }
+
+    hideDriveLoading();
+    return false;
+  }
+}
+
+async function refreshFromDrive(){
+  const btn = document.getElementById("refreshDriveBtn");
+  if(btn){
+    btn.disabled = true;
+    btn.textContent = "⏳ Memuat...";
+  }
+
+  await loadFromDrive(true);
+
+  if(document.getElementById("adminView") &&
+     !document.getElementById("adminView").classList.contains("hidden")){
+    renderAdmin();
+  }else{
+    renderHome();
+  }
+
+  if(btn){
+    btn.disabled = false;
+    btn.textContent = "🔄 Muat dari Drive";
+  }
+}
+
+/* Jalankan: Drive adalah sumber utama. */
+(async function(){
+  showDriveLoading(
+    "Memuat Yuk Cari Tahu...",
+    "Mengambil data tes terbaru dari Google Drive."
+  );
+
+  const loaded = await loadFromDrive(false);
+
+  // Jika Drive berhasil: gunakan data Drive.
+  // Jika gagal: gunakan cache lokal sebagai fallback.
+  applySiteSettings();
+  renderHome();
+
+  if(!loaded){
+    console.warn("Drive gagal dimuat; menggunakan cache/local data.");
+  }
+
+  hideDriveLoading();
+})();
+</script>
+</body>
+</html>
